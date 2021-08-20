@@ -9,33 +9,37 @@ router.get('/new', (req, res) => {
 })
 
 router.post('/', (req, res) => {
+  const UserId = req.user.id
   const name = req.body.name
-  return Todo.create({ name, userId })
+  return Todo.create({ name, UserId })
     .then(() => res.redirect('/'))
     .catch(err => console.log(err))
 })
 
 router.get('/:id', (req, res) => {
+  const UserId = req.user.id
   const id = req.params.id
   return Todo.findOne({
-    where: { id }
+    where: { id, UserId }
   })
     .then(todo => res.render('detail', { todo: todo.toJSON() }))
     .catch(err => console.log(err))
 })
 
 router.get('/:id/edit', (req, res) => {
+  const UserId = req.user.id
   const id = req.params.id
-  return Todo.findOne({ where: { id }})
+  return Todo.findOne({ where: { id, UserId }})
     .then(todo => res.render('edit', { todo: todo.get() }))
     .catch(err => console.log(err))
 })
 
 router.put('/:id', (req, res) => {
+  const UserId = req.user.id
   const id = req.params.id
   const { name, isDone } = req.body
   console.log(req.body)
-  return Todo.findOne({ where: { id }})
+  return Todo.findOne({ where: { id, UserId }})
     .then(todo => {
       todo.name = name
       todo.isDone = isDone === 'on'
@@ -46,9 +50,10 @@ router.put('/:id', (req, res) => {
 })
 
 router.delete('/:id', (req, res) => {
+  const UserId = req.user.id
   const id = req.params.id
 
-  return Todo.findOne({ where: { id } })
+  return Todo.findOne({ where: { id, UserId } })
     .then(todo => todo.destroy())
     .then(() => res.redirect('/'))
     .catch(err => console.log(err))
